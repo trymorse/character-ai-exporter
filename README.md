@@ -7,6 +7,16 @@ This repository holds two things:
 - **`cai-exporter.js`**, the exporter. It's the exact file https://trymorse.ai/cai-exporter.js serves, and the script behind the Export for Morse bookmark on [trymorse.ai/import](https://trymorse.ai/import).
 - **`extension/`**, Move to Morse, the browser extension for Chrome and Firefox. It puts a Save for Morse button on character.ai, runs the same exporter, and hands the file straight to Morse's import.
 
+## See it work
+
+On a computer, with the bookmark:
+
+https://github.com/user-attachments/assets/86a9a667-aac0-45f5-b2e7-4bd07eb1c8c3
+
+On an iPhone:
+
+https://github.com/user-attachments/assets/b2e2bf49-5ece-4322-bebb-4e77c1becb4d
+
 ## What the exporter does
 
 - It runs only in your browser, on character.ai, with your own signed-in session.
