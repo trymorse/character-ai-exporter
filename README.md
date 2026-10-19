@@ -1,6 +1,6 @@
-# Move to Morse
+# Character.AI exporter
 
-Save your Character.AI characters, chats, and personas in one go, and bring them to [Morse](https://trymorse.ai).
+Save your Character.AI characters, chats, and personas in one go, to a file on your own device, and bring them to [Morse](https://trymorse.ai).
 
 This repository holds two things:
 
@@ -65,4 +65,4 @@ This writes `dist-extension/`, with a folder to load unpacked and a zip for each
 
 MIT. See [LICENSE](LICENSE).
 
-Move to Morse is made by Morse. It isn't made by, endorsed by, or affiliated with Character.AI, whose name is used only to say what it works with. Questions or problems: open an issue, or write to hello@trymorse.ai.
+The exporter and Move to Morse are made by Morse. They aren't made by, endorsed by, or affiliated with Character.AI, whose name is used only to say what they work with. Questions or problems: open an issue, or write to hello@trymorse.ai.
