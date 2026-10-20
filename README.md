@@ -5,7 +5,7 @@ Save your Character.AI characters, chats, and personas in one go, to a file on y
 This repository holds two things:
 
 - **`cai-exporter.js`**, the exporter. It's the exact file https://trymorse.ai/cai-exporter.js serves, and the script behind the Export for Morse bookmark on [trymorse.ai/import](https://trymorse.ai/import).
-- **`extension/`**, Move to Morse, the browser extension for Chrome and Firefox. It puts a Save for Morse button on character.ai, runs the same exporter, and hands the file straight to Morse's import.
+- **`extension/`**, Move to Morse, a browser extension for Chrome and Firefox, not in their stores yet. It puts a Save for Morse button on character.ai, runs the same exporter, and hands the file straight to Morse's import.
 
 ## See it work
 
@@ -54,7 +54,7 @@ With Node 24.2 or later:
 node scripts/build-extension.mjs
 ```
 
-This writes `dist-extension/`, with a folder to load unpacked and a zip for each browser. The same files always make the same zip, byte for byte. Version 1.0.0, as uploaded to the Chrome Web Store and Firefox Add-ons:
+This writes `dist-extension/`, with a folder to load unpacked and a zip for each browser. The same files always make the same zip, byte for byte. Version 1.0.0 makes these:
 
 | Zip | SHA-256 |
 | --- | --- |
