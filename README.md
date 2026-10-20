@@ -5,7 +5,7 @@ Save your Character.AI characters, chats, and personas in one go, to a file on y
 This repository holds two things:
 
 - **`cai-exporter.js`**, the exporter. It's the exact file https://trymorse.ai/cai-exporter.js serves, and the script behind the Export for Morse bookmark on [trymorse.ai/import](https://trymorse.ai/import).
-- **`extension/`**, Move to Morse, a browser extension for Chrome and Firefox, not in their stores yet. It puts a Save for Morse button on character.ai, runs the same exporter, and hands the file straight to Morse's import.
+- **`extension/`**, Move to Morse, a browser extension for Chrome and Firefox, on its way to their stores. It puts a Save for Morse button on character.ai, runs the same exporter, and hands the file straight to Morse's import.
 
 ## See it work
 
