@@ -4,8 +4,8 @@
 // to Character.AI's API are still the page's own. The exporter hands the file it saves to
 // `__morseExtension` here, and its Open in Morse, clicked by the user, asks for it to go to Morse.
 // No script of the page's can reach either, so none can give Morse a file of its own or open it.
-// This then sends the file to the background, which keeps it and opens Morse's /import, where
-// morse.js hands it to the page. Nothing marks the page as the extension's.
+// This then sends the file to the background, which keeps it and opens Morse at the Import dialog,
+// where morse.js hands it to the page. Nothing marks the page as the extension's.
 (() => {
 	/** The file the exporter saved last.
 	 * @type {{ name: string, file: Blob, partial: boolean } | undefined} */
@@ -93,30 +93,29 @@
 	hide.addEventListener("click", () => host.remove());
 
 	/** Morse's mark, as public/brand/mark.svg draws it (extension/test/character-ai.test.ts holds
-	 * the two together): two quarters of a four-pointed star, the top left's navy and the bottom
-	 * right's bright blue, each lit along its curved edge. */
+	 * the two together): a four-pointed star cut down its middle, its two halves slid apart, the
+	 * left one up in navy and the right one down in cornflower. Each half is filled with a
+	 * radial gradient, brightest a little out from its spine and deepest at its points. */
 	function mark() {
-		const quarters = [
-			{
-				d: "M0 0V-12C0 -6 -6 0 -12 0Z",
-				glow: -7.2,
-				stops: [
-					[0.48, "#022c96"],
-					[0.72, "#03227a"],
-					[1, "#04144c"],
-				],
-			},
-			{
-				d: "M0 0H12C6 0 0 6 0 12Z",
-				glow: 7.2,
-				stops: [
-					[0.48, "#0ba4fe"],
-					[0.66, "#0369fe"],
-					[0.85, "#0156fe"],
-					[1, "#0153f8"],
-				],
-			},
-		];
+		/** How far each half's points reach from the middle of its straight side, its spine; how far
+		 * its spine stands off the star's upright middle line; and how far it's slid along it. */
+		const [reach, gap, slide] = [10, 0.8, 2];
+		const halves = [
+			{ side: -1, stops: ["#6891db", "#2d4b83", "#142546"] },
+			{ side: 1, stops: ["#c5d8f9", "#80a5e7", "#527bc3"] },
+		].map(({ side, stops }) => {
+			const [x, y] = [side * gap, side * slide];
+			const half = reach / 2;
+			return {
+				// Its spine from its top point down to its bottom one, closed by two curves out to its
+				// side point and back, bowed in toward the spine.
+				d: `M${x} ${y - reach}C${x} ${y - half} ${x + side * half} ${y} ${x + side * reach} ${y}C${x + side * half} ${y} ${x} ${y + half} ${x} ${y + reach}Z`,
+				// Its fill's middle, a little out from the middle of its spine, and how far it reaches:
+				// past the points, so they're the deepest.
+				glow: { cx: side * (gap + 2.5), cy: y, r: 11 },
+				stops,
+			};
+		});
 		/** An SVG element named `name`, with `attributes` and `children`.
 		 * @param {string} name @param {Record<string, string | number>} attributes
 		 * @param {Element[]} children */
@@ -136,24 +135,18 @@
 			made(
 				"defs",
 				{},
-				...quarters.map(({ glow, stops }, i) =>
+				...halves.map(({ glow, stops }, h) =>
 					made(
 						"radialGradient",
-						{
-							id: `morse-mark-${i}`,
-							gradientUnits: "userSpaceOnUse",
-							cx: glow,
-							cy: glow,
-							r: 10.2,
-						},
-						...stops.map(([offset, color]) =>
-							made("stop", { offset, "stop-color": color }),
+						{ id: `morse-mark-${h}`, gradientUnits: "userSpaceOnUse", ...glow },
+						...stops.map((color, s) =>
+							made("stop", { offset: [0, 0.55, 1][s], "stop-color": color }),
 						),
 					),
 				),
 			),
-			...quarters.map(({ d }, i) =>
-				made("path", { d, fill: `url(#morse-mark-${i})` }),
+			...halves.map(({ d }, h) =>
+				made("path", { d, fill: `url(#morse-mark-${h})` }),
 			),
 		);
 	}

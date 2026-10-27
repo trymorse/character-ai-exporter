@@ -1,7 +1,7 @@
 // Morse's extension, behind its pages: it runs Morse's exporter (cai-exporter.js) in a character.ai
 // page when Save for Morse asks, keeps the file the exporter saved once Open in Morse sends it, opens
-// Morse's /import beside the page, and gives the file to Morse's page there when it asks, until the
-// page has it. Chrome runs this as a service worker (worker.js) and Firefox as a background script,
+// Morse's Characters beside the page, asking for the Import dialog, and gives the file to Morse's
+// page there when it asks, until the page has it. Chrome runs this as a service worker (worker.js) and Firefox as a background script,
 // and either may stop it between messages, so the file is kept in the extension's own IndexedDB,
 // never only in memory. The file never leaves the browser.
 (() => {
@@ -69,8 +69,8 @@
 	chrome.runtime.onStartup.addListener(() => void removeIf(stale));
 
 	/**
-	 * Keeps the file Open in Morse sends on `port`, then opens Morse's /import beside the page it
-	 * came from.
+	 * Keeps the file Open in Morse sends on `port`, then opens Morse's Characters, asking for the
+	 * Import dialog, beside the page it came from.
 	 * @param {chrome.runtime.Port} port
 	 */
 	async function keepFrom(port) {
@@ -88,7 +88,7 @@
 			// Beside the page: Firefox for Android takes no opener for a tab.
 			const tab = port.sender?.tab;
 			chrome.tabs.create({
-				url: new URL("/import", MORSE).href,
+				url: new URL("/characters?tab=custom&import=extension", MORSE).href,
 				...(tab && { index: tab.index + 1 }),
 			});
 		} catch {

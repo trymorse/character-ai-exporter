@@ -2,6 +2,8 @@
 
 Save your Character.AI characters, chats, and personas in one go, to a file on your own device, and bring them to [Morse](https://trymorse.ai).
 
+The same script also saves your chats from Chai and Chub. Run it on the site you're leaving, and it reads only that site.
+
 This repository holds two things:
 
 - **`cai-exporter.js`**, the exporter. It's the exact file https://trymorse.ai/cai-exporter.js serves, and the script behind the Export for Morse bookmark on [trymorse.ai/import](https://trymorse.ai/import).
@@ -22,10 +24,10 @@ https://github.com/user-attachments/assets/b2e2bf49-5ece-4322-bebb-4e77c1becb4d
 - It runs only in your browser, on character.ai, with your own signed-in session.
 - It reads your data the way the site itself does: your chats and every message in them, each chat's memory box, the characters you talked to and the ones you made (with their definitions, since they're yours), your personas, and the characters' pictures.
 - It only reads. It never changes or deletes anything on your Character.AI account.
-- It talks to nothing but Character.AI: character.ai's own pages for your session, `neo.character.ai` for your data, and `characterai.io` for pictures. The file is built in your browser and saved as a download. Nothing is sent to Morse.
+- It talks to nothing but Character.AI: character.ai's own pages for your session, `neo.character.ai` for your data, and `characterai.io` for pictures. Run on another site it reads, it talks only to that site. The file is built in your browser and saved as a download. Nothing is sent to Morse.
 - It asks one thing at a time, a quarter second apart, and rests for ten seconds whenever Character.AI asks it to, so a long history doesn't load the site.
 - Stop saves what's done so far, and the next run in the same browser picks up where it left off.
-- If something goes wrong, Copy a report puts a report on your clipboard for you to send us. It lists which kinds of requests were made and how they were answered, never a message, a name, an id, or a picture.
+- If something goes wrong, or something's missing from the file, Copy a report puts a report on your clipboard for you to send us. It lists which kinds of requests were made and how they were answered, never a message, a name, an id, or a picture.
 
 ## What the extension does
 
@@ -58,8 +60,8 @@ This writes `dist-extension/`, with a folder to load unpacked and a zip for each
 
 | Zip | SHA-256 |
 | --- | --- |
-| `move-to-morse-1.0.0-chrome.zip` | `4a7a4ae0293dc508e99c8b993f439b2dbc90c7da28e8c09dcf783e261039309d` |
-| `move-to-morse-1.0.0-firefox.zip` | `023963b434e7f509f855cc4e473d1448e46e40ad2bc3f31e94119c47cf373409` |
+| `move-to-morse-1.0.0-chrome.zip` | `3c5f7aedcaa7aaaf7e84756f0cc0be6e4495ac24471baa64fb8262b3691d51c8` |
+| `move-to-morse-1.0.0-firefox.zip` | `c75e34332f31aabefa41f6721f6eb2521733111dbce9d55c4f442f66db3b58ee` |
 
 ## License
 
