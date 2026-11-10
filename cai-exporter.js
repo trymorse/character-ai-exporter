@@ -25,6 +25,8 @@
 	const AVATARS = "https://characterai.io/i/400/static/avatars/";
 	const GAP_MS = 250;
 	const BUSY_MS = 10_000;
+	/** How many times a picture is asked for again, its server busy or failing, before it's missing. */
+	const PICTURE_TRIES = 3;
 	/** How long a request may go unanswered before it's given up on and asked again. */
 	const PATIENCE_MS = 30_000;
 
@@ -111,7 +113,11 @@
 			file: "chai-export",
 			keep: "morse-export:chai-ai.com",
 			list: "messages",
-			api: "",
+			// Its API is www's. Chai's app at app.chai-ai.com answers /api with the app's own page, and
+			// www's API takes that app's requests.
+			api: /^(www\.)?chai-ai\.com$/.test(location.hostname)
+				? ""
+				: "https://www.chai-ai.com",
 			headers: bearer,
 			profile: "/api/auth/me",
 			// The session's token lasts an hour, and the page renews it.
@@ -569,17 +575,40 @@
 			throw error;
 		});
 
-	/** A picture at `url` as a data URL, or undefined if it can't be had. */
+	/** A picture at `url` as a data URL, or undefined if it can't be had. Its server asking for a
+	 * pause (429) is waited out, and a server or network error tried again after a rest, a few
+	 * times each, as an API request is: a long run asks for thousands, and a busy minute shouldn't
+	 * cost the characters their faces. Past that the picture is missing, and the export goes on. */
 	async function picture(url) {
 		if (!str(url)) return undefined;
-		try {
-			const { body: blob } = await fetched(url, {}, (res) =>
-				res.ok ? res.blob() : undefined,
-			);
-			if (!blob?.type.startsWith("image/")) {
-				report.counts.picturesMissing++;
-				return undefined;
+		const missing = () => {
+			report.counts.picturesMissing++;
+			return undefined;
+		};
+		for (let tries = 0; ; tries++) {
+			let res;
+			let blob;
+			try {
+				({ res, body: blob } = await fetched(url, {}, (res) =>
+					res.ok ? res.blob() : undefined,
+				));
+			} catch (error) {
+				if (error?.message === "stopped") throw error;
+				tally("picture", error?.message === "timeout" ? "timeout" : "network");
+				if (tries >= PICTURE_TRIES) return missing();
+				report.retries++;
+				await sleep(1000 * 2 ** tries);
+				continue;
 			}
+			tally("picture", res.status);
+			if (res.status === 429 || res.status >= 500) {
+				if (tries >= PICTURE_TRIES) return missing();
+				if (res.status === 429) report.pauses++;
+				else report.retries++;
+				await sleep(res.status === 429 ? BUSY_MS : 1000 * 2 ** tries);
+				continue;
+			}
+			if (!blob?.type.startsWith("image/")) return missing();
 			report.counts.pictures++;
 			return await new Promise((done) => {
 				const reader = new FileReader();
@@ -587,10 +616,6 @@
 				reader.onerror = () => done(undefined);
 				reader.readAsDataURL(blob);
 			});
-		} catch (error) {
-			if (error?.message === "stopped") throw error;
-			report.counts.picturesMissing++;
-			return undefined;
 		}
 	}
 
@@ -1505,7 +1530,12 @@
 		const chats = out.characters.flatMap((c) => c.chats);
 		const turns = chats.reduce((sum, c) => sum + c.turns, 0);
 		const count = (k, one) => `${n(k)} ${k === 1 ? one : `${one}s`}`;
-		const held = `${count(out.characters.length, "character")}, ${count(chats.length, "chat")}, and ${count(turns, "message")}.`;
+		const missed = report.counts.picturesMissing;
+		const held = `${count(out.characters.length, "character")}, ${count(chats.length, "chat")}, and ${count(turns, "message")}.${
+			missed
+				? ` ${count(missed, "picture")} couldn't be saved, so ${missed === 1 ? "that character comes" : "those characters come"} without ${missed === 1 ? "it" : "them"}.`
+				: ""
+		}`;
 		const before = progress.part - 1;
 		const earlierFiles =
 			before === 1 ? "the earlier file" : `the ${n(before)} earlier files`;

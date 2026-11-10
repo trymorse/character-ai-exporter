@@ -60,8 +60,8 @@ This writes `dist-extension/`, with a folder to load unpacked and a zip for each
 
 | Zip | SHA-256 |
 | --- | --- |
-| `move-to-morse-1.0.0-chrome.zip` | `3c5f7aedcaa7aaaf7e84756f0cc0be6e4495ac24471baa64fb8262b3691d51c8` |
-| `move-to-morse-1.0.0-firefox.zip` | `c75e34332f31aabefa41f6721f6eb2521733111dbce9d55c4f442f66db3b58ee` |
+| `move-to-morse-1.0.0-chrome.zip` | `a5ff2cc197f02c110cbb7c2c052e794f024a0668cd8feb8cf9f7f28c29ddc253` |
+| `move-to-morse-1.0.0-firefox.zip` | `1ab171c13be174325f52c29e39f1d9300131d59e743a856477335d92449d8ffd` |
 
 ## License
 
