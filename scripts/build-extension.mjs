@@ -3,7 +3,8 @@
 // load unpacked and a zip to upload to its store, under dist-extension/. The scripts go in as they
 // are written, beside Morse's exporter (cai-exporter.js, the same file https://trymorse.ai serves),
 // so a store's reviewer reads the code this repository holds, with nothing generated but the
-// manifest, made here for each browser and for the Morse the build opens.
+// manifest, made here for each browser and for the Morse the build opens. It runs in Morse's own
+// repository and, as it is, in the exporter's public one, where cai-exporter.js is at the top.
 //
 // Usage: node scripts/build-extension.mjs [--dev | --origin <url>] [--out <dir>]
 //
@@ -13,7 +14,7 @@
 //   --out <dir>     where the builds go, dist-extension/ unless given
 //
 // The zips come out the same for the same files: entries in order, each dated 1980-01-01.
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { crc32, deflateRawSync } from "node:zlib";
@@ -134,13 +135,20 @@ export function zip(files) {
 	return Buffer.concat([...locals, ...directory, end]);
 }
 
+/** Where the exporter is under `root`: in Morse's app, or at the top of its public repository.
+ * @param {string} root */
+const exporterIn = (root) => {
+	const app = join(root, "src/lib/characters/import/exporter/cai-exporter.js");
+	return existsSync(app) ? app : join(root, "cai-exporter.js");
+};
+
 /** The files of `browser`'s build for Morse at `origin`, by their paths in it, read from `root`.
  * @param {"chrome" | "firefox"} browser @param {string} origin @param {string} root */
 export function filesOf(browser, origin, root) {
 	/** @type {[string, Uint8Array][]} */
 	const files = [["manifest.json", Buffer.from(`${JSON.stringify(manifest(browser, origin), null, 2)}\n`)]];
 	for (const script of SCRIPTS[browser]) files.push([script, readFileSync(join(root, "extension/src", script))]);
-	files.push(["cai-exporter.js", readFileSync(join(root, "cai-exporter.js"))]);
+	files.push(["cai-exporter.js", readFileSync(exporterIn(root))]);
 	for (const size of ICONS) files.push([`icons/icon-${size}.png`, readFileSync(join(root, `extension/icons/icon-${size}.png`))]);
 	return files;
 }
